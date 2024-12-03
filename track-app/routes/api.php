@@ -18,15 +18,15 @@ Route::get('/redirect', function (Request $request) {
 
     // Collect all data
     $data = [
-        'DateTime' => now()->toDateTimeString(),
-        'IP_Address' => $ipAddress,
-        'User_Agent' => $userAgent,
-        'Referrer' => $referrer,
-        'URL' => $fullUrl,
-        'Language' => $languages,
-        'Location' => [
-            'Latitude' => 0,
-            'Longitude' => 0,
+        'datetime' => now()->toDateTimeString(),
+        'ip_address' => $ipAddress,
+        'user_agent' => $userAgent,
+        'referrer' => $referrer,
+        'url' => $fullUrl,
+        'language' => $languages,
+        'location' => [
+            'lat' => 0,
+            'long' => 0,
         ],
     ];
 

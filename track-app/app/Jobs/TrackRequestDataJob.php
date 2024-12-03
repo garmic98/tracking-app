@@ -33,7 +33,7 @@ class TrackRequestDataJob implements ShouldQueue
      */
     public function handle()
     {
-        $ipAddress = $this->data['IP_Address'];
+        $ipAddress = $this->data['ip_address'];
 
         if($ipAddress == "127.0.0.1") // if localhost -> use more interesting IP
         {
@@ -42,13 +42,14 @@ class TrackRequestDataJob implements ShouldQueue
 
         $response = Http::get("http://ip-api.com/json/{$ipAddress}");
 
-        $parsedAgent = Functions::parseUserAgent($this->data['User_Agent']);
-        $this->data['Operating_System'] = Functions::parseUserAgent($parsedAgent)["os"];
-        $this->data['Device'] = Functions::parseUserAgent($parsedAgent)["device"];
+        $parsedAgent = Functions::parseUserAgent($this->data['user_agent']);
+        $this->data['os'] = $parsedAgent["os"];
+        $this->data['device'] = $parsedAgent["device"];
+
 
         if ($response->successful()) {
-            $this->data['Location']['Latitude'] = $response["lat"];
-            $this->data['Location']['Longitude'] = $response['lon'];
+            $this->data['location']['lat'] = $response["lat"];
+            $this->data['location']['long'] = $response['lon'];
         } else {
             Log::error("Failed to get location data for IP {$ipAddress}");
         }
