@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\RequestDataController;
+use App\Utils\Functions;
 
 class TrackRequestDataJob implements ShouldQueue
 {
@@ -34,15 +35,16 @@ class TrackRequestDataJob implements ShouldQueue
     {
         $ipAddress = $this->data['IP_Address'];
 
-        if($ipAddress == "127.0.0.1")
+        if($ipAddress == "127.0.0.1") // if localhost -> use more interesting IP
         {
             $ipAddress = "142.251.211.227";
         }
 
         $response = Http::get("http://ip-api.com/json/{$ipAddress}");
 
-        $this->data['Location']['Latitude'] = 0;
-        $this->data['Location']['Longitude'] = 0;
+        $parsedAgent = Functions::parseUserAgent($this->data['User_Agent']);
+        $this->data['Operating_System'] = Functions::parseUserAgent($parsedAgent)["os"];
+        $this->data['Device'] = Functions::parseUserAgent($parsedAgent)["device"];
 
         if ($response->successful()) {
             $this->data['Location']['Latitude'] = $response["lat"];

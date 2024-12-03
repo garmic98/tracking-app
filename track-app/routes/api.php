@@ -8,8 +8,6 @@ use App\Http\Controllers\RequestDataController;
 
 Route::get('/redirect', function (Request $request) {
     $url = $request->query('url');
-    Log::channel("stdout")->info($url);
-
     $ipAddress = $request->ip();
 
     //Header information
@@ -18,15 +16,11 @@ Route::get('/redirect', function (Request $request) {
     $languages = $request->header('Accept-Language');
     $fullUrl = $request->fullUrl();
 
-    $os = $userAgent;
-    $device = $userAgent;
-
     // Collect all data
     $data = [
         'DateTime' => now()->toDateTimeString(),
         'IP_Address' => $ipAddress,
-        'Operating_System' => $os,
-        'Device' => $device,
+        'User_Agent' => $userAgent,
         'Referrer' => $referrer,
         'URL' => $fullUrl,
         'Language' => $languages,
@@ -36,7 +30,7 @@ Route::get('/redirect', function (Request $request) {
         ],
     ];
 
-    // Trigger the asynchronous job so that fetching and writing data to the database doesn't block the request
+    // Pass request data to the job
     TrackRequestDataJob::dispatch($data);
 
     // Ensure the 'url' parameter exists and is valid
