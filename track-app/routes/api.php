@@ -7,20 +7,18 @@ use App\Http\Controllers\RequestDataController;
 
 
 Route::get('/redirect', function (Request $request) {
-    $url = $request->query('url'); // Retrieve 'url' query parameter
+    $url = $request->query('url');
     Log::channel("stdout")->info($url);
 
-    // Get client IP address
     $ipAddress = $request->ip();
 
-    // Extract headers for device and OS detection
+    //Header information
     $userAgent = $request->header('User-Agent');
     $referrer = $request->header('Referer', 'N/A');
     $languages = $request->header('Accept-Language');
     $fullUrl = $request->fullUrl();
 
-    // Parse user-agent (custom parsing or libraries like Jenssegers Agent can be used here)
-    $os = $userAgent; // Simplified for demonstration
+    $os = $userAgent;
     $device = $userAgent;
 
     // Collect all data
@@ -38,7 +36,7 @@ Route::get('/redirect', function (Request $request) {
         ],
     ];
 
-    //// Dispatch the job to handle this data
+    // Trigger the asynchronous job so that fetching and writing data to the database doesn't block the request
     TrackRequestDataJob::dispatch($data);
 
     // Ensure the 'url' parameter exists and is valid
